@@ -1,0 +1,26 @@
+.footer {
+  background-color: #4B352A;
+  color: #B2CD9C;
+  padding: 2rem 1rem;
+  text-align: center;
+}
+
+.footer-container {
+  max-width: 1000px;
+  margin: auto;
+}
+
+.footer h4 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.footer p {
+  margin: 0.5rem 0;
+}
+
+.footer-copy {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: #d6e3c4;
+}
