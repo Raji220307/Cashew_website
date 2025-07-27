@@ -5,7 +5,7 @@ function HealthBenefits() {
         <div className="col-lg-8 text-center">
           <div
             className="card shadow border-0 p-4"
-            style={{ backgroundColor: "#fff5eb" }} // soft beige color
+            style={{ backgroundColor: "#fff5eb" }} 
           >
             <h2 className="card-title mb-3 text-brown">Health Benefits of Cashews</h2>
             <p className="card-text lead text-muted">Cashews are not just tasty — they’re packed with nutrients.</p>

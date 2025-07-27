@@ -2,12 +2,14 @@ import { Navbar, Container, Nav, NavDropdown, Badge } from 'react-bootstrap';
 import { FaShoppingCart } from 'react-icons/fa';
 import cashewlogo from '../assets/logo.png';
 import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, NavLink } from 'react-router-dom';
 
 function Navcashew() {
   const [cartCount, setCartCount] = useState(0);
   const [expanded, setExpanded] = useState(false);
   const location = useLocation();
+  const token = localStorage.getItem("userToken");
+  const role = localStorage.getItem("userRole");
 
   useEffect(() => {
     const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
@@ -25,6 +27,12 @@ function Navcashew() {
 
   const handleNavClick = () => {
     setExpanded(false); 
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("userToken");
+    localStorage.removeItem("userRole");
+    window.location.href = "/";
   };
 
   return (
@@ -51,8 +59,12 @@ function Navcashew() {
         <Navbar.Toggle aria-controls="navbarScroll" />
         <Navbar.Collapse id="navbarScroll" className="justify-content-end slide-left">
           <Nav className="ms-auto text-center" navbarScroll>
-            <Nav.Link as={Link} to="/" onClick={handleNavClick} active={location.pathname === '/'}>Home</Nav.Link>
-            <Nav.Link as={Link} to="/about" onClick={handleNavClick} active={location.pathname === '/about'}>About</Nav.Link>
+            <Nav.Link as={NavLink} to="/" onClick={handleNavClick} active={location.pathname === '/'}>
+              Home
+            </Nav.Link>
+            <Nav.Link as={NavLink} to="/about" onClick={handleNavClick} active={location.pathname === '/about'}>
+              About
+            </Nav.Link>
 
             <NavDropdown title="Products" id="productsDropdown">
               <NavDropdown.Item as={Link} to="/products" onClick={handleNavClick}>Product List</NavDropdown.Item>
@@ -74,6 +86,29 @@ function Navcashew() {
                 </Badge>
               )}
             </Nav.Link>
+
+            {/* Auth Section */}
+            {token ? (
+              <>
+                {role === "admin" && (
+                  <Nav.Link as={Link} to="/admin/add-product" onClick={handleNavClick}>
+                    Add Product
+                  </Nav.Link>
+                )}
+                <Nav.Link onClick={() => { handleLogout(); handleNavClick(); }}>
+                  Logout
+                </Nav.Link>
+              </>
+            ) : (
+              <>
+                <Nav.Link as={Link} to="/login" onClick={handleNavClick}>
+                  Login
+                </Nav.Link>
+                <Nav.Link as={Link} to="/register" onClick={handleNavClick}>
+                  Sign Up
+                </Nav.Link>
+              </>
+            )}
           </Nav>
         </Navbar.Collapse>
       </Container>
