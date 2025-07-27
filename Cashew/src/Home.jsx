@@ -1,4 +1,3 @@
-// pages/Home.jsx
 import Hero from '../components/Hero';
 import About from '../components/About';
 import Testimonials from '../components/Testimonials';

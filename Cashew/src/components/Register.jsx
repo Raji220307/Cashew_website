@@ -26,7 +26,8 @@ const Register = () => {
     }
 
     try {
-      const res = await axios.post("http://localhost:5000/api/users/register", form);
+      const res = await axios.post("https://cashew-backend-1.onrender.com/api/users/login", form);
+
       localStorage.setItem("userToken", res.data.token);
       localStorage.setItem("userRole", res.data.role);
       alert("Registration successful");
