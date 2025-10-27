@@ -88,27 +88,35 @@ function Navcashew() {
             </Nav.Link>
 
             {/* Auth Section */}
-            {token ? (
-              <>
-                {role === "admin" && (
-                  <Nav.Link as={Link} to="/admin/add-product" onClick={handleNavClick}>
-                    Add Product
-                  </Nav.Link>
-                )}
-                <Nav.Link onClick={() => { handleLogout(); handleNavClick(); }}>
-                  Logout
-                </Nav.Link>
-              </>
-            ) : (
-              <>
-                <Nav.Link as={Link} to="/login" onClick={handleNavClick}>
-                  Login
-                </Nav.Link>
-                <Nav.Link as={Link} to="/register" onClick={handleNavClick}>
-                  Sign Up
-                </Nav.Link>
-              </>
-            )}
+            {/* Auth Section */}
+{/* Auth Section */}
+{token ? (
+  <>
+    {/* ✅ Only admins see Add Product */}
+    {role && role.trim().toLowerCase() === "admin" && (
+      <Nav.Link as={Link} to="/admin/add-product" onClick={handleNavClick}>
+        Add Product
+      </Nav.Link>
+    )}
+
+    {/* ✅ Both users and admins see Logout */}
+    <Nav.Link onClick={() => { handleLogout(); handleNavClick(); }}>
+      Logout
+    </Nav.Link>
+  </>
+) : (
+  <>
+    {/* ✅ Guests see Login & Sign Up */}
+    <Nav.Link as={Link} to="/login" onClick={handleNavClick}>
+      Login
+    </Nav.Link>
+    <Nav.Link as={Link} to="/register" onClick={handleNavClick}>
+      Sign Up
+    </Nav.Link>
+  </>
+)}
+
+
           </Nav>
         </Navbar.Collapse>
       </Container>
