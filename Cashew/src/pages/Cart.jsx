@@ -6,18 +6,34 @@ function Cart() {
   const [cartItems, setCartItems] = useState([]);
 
   useEffect(() => {
-    const storedCart = JSON.parse(localStorage.getItem("cartItems")) || [];
-    const initializedCart = storedCart.map((item) => ({
-      ...item,
-      quantity: Number.isInteger(item.quantity) && item.quantity > 0 ? item.quantity : 1,
-    }));
-    setCartItems(initializedCart);
+    const loadCart = () => {
+      const storedCart = JSON.parse(localStorage.getItem("cartItems")) || [];
+      const initializedCart = storedCart.map((item) => ({
+        ...item,
+        quantity:
+          Number.isInteger(item.quantity) && item.quantity > 0
+            ? item.quantity
+            : 1,
+      }));
+      setCartItems(initializedCart);
+    };
+
+    loadCart();
+
+    window.addEventListener("storage", loadCart);
+    window.addEventListener("cartUpdated", loadCart);
+
+    return () => {
+      window.removeEventListener("storage", loadCart);
+      window.removeEventListener("cartUpdated", loadCart);
+    };
   }, []);
 
   const handleRemove = (id) => {
     const updatedCart = cartItems.filter((item) => item.id !== id);
     setCartItems(updatedCart);
     localStorage.setItem("cartItems", JSON.stringify(updatedCart));
+    window.dispatchEvent(new Event("cartUpdated")); // trigger UI sync
   };
 
   const handleQuantityChange = (id, qty) => {
@@ -27,14 +43,14 @@ function Cart() {
     );
     setCartItems(updatedCart);
     localStorage.setItem("cartItems", JSON.stringify(updatedCart));
+    window.dispatchEvent(new Event("cartUpdated")); // trigger UI sync
   };
 
   const handleCheckout = () => {
-    navigate("/checkout"); 
+    navigate("/checkout");
   };
 
   const getItemTotal = (item) => Number(item.rate) * Number(item.quantity);
-
   const totalAmount = cartItems.reduce(
     (sum, item) => sum + getItemTotal(item),
     0
