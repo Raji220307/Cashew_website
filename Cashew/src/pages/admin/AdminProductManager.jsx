@@ -16,9 +16,10 @@ function AdminProductManager() {
 
   const fetchProducts = async () => {
     try {
-      const { data } = await axios.get("https://cashew-backend-1.onrender.com/api/products");
-      setProducts(data);
+      const response = await axios.get("https://cashew-backend-1.onrender.com/api/products");
+      setProducts(response.data);
     } catch (err) {
+      console.error("Server error:", err);
       setMessage("⚠️ Failed to fetch products.");
     }
   };
@@ -40,7 +41,7 @@ function AdminProductManager() {
 
       const method = editingId ? "put" : "post";
 
-      const { data } = await axios[method](url, form, {
+      await axios[method](url, form, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -49,7 +50,8 @@ function AdminProductManager() {
       setEditingId(null);
       fetchProducts();
     } catch (err) {
-      setMessage("❌ Failed to save product.");
+      console.error("Server error:", err);
+      setMessage("⚠️ Failed to save product.");
     } finally {
       setLoading(false);
     }
@@ -75,7 +77,8 @@ function AdminProductManager() {
       setMessage("🗑️ Product deleted.");
       fetchProducts();
     } catch (err) {
-      setMessage("❌ Failed to delete product.");
+      console.error("Server error:", err);
+      setMessage("⚠️ Failed to delete product.");
     }
   };
 
@@ -170,16 +173,28 @@ function AdminProductManager() {
                   <td>{index + 1}</td>
                   <td>{p.name}</td>
                   <td>
-                    <img src={p.image} alt={p.name} width="50" height="50" style={{ borderRadius: "8px" }} />
+                    <img
+                      src={p.image}
+                      alt={p.name}
+                      width="50"
+                      height="50"
+                      style={{ borderRadius: "8px" }}
+                    />
                   </td>
                   <td>{p.quantity}</td>
                   <td>₹{p.price}</td>
                   <td>
-                    <button className="btn btn-sm btn-warning me-2" onClick={() => handleEdit(p)}>
-                      ✏️ Edit
+                    <button
+                      className="btn btn-sm btn-warning me-2"
+                      onClick={() => handleEdit(p)}
+                    >
+                      Edit
                     </button>
-                    <button className="btn btn-sm btn-danger" onClick={() => handleDelete(p._id)}>
-                      🗑️ Delete
+                    <button
+                      className="btn btn-sm btn-danger"
+                      onClick={() => handleDelete(p._id)}
+                    >
+                      Delete
                     </button>
                   </td>
                 </tr>

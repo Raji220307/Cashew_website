@@ -15,14 +15,21 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const res = await axios.post("https://cashew-backend-1.onrender.com/api/users/login", form);
-;
+      const res = await axios.post(
+        "https://cashew-backend-1.onrender.com/api/users/login",
+        form
+      );
 
+      // ✅ Store token and role
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("role", res.data.role);
 
-      localStorage.setItem("userToken", res.data.token);
-      localStorage.setItem("userRole", res.data.role);
-
-      navigate("/");
+      // ✅ Redirect based on role
+      if (res.data.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
     } finally {
@@ -63,16 +70,18 @@ const Login = () => {
               />
             </Form.Group>
 
-            <Button variant="dark" type="submit" className="w-100" disabled={loading}>
+            <Button
+              variant="dark"
+              type="submit"
+              className="w-100"
+              disabled={loading}
+            >
               {loading ? <Spinner animation="border" size="sm" /> : "Login"}
             </Button>
           </Form>
 
           <div className="text-center mt-3">
-            Don't have an account?{" "}
-            <Link to="/register">
-              Sign Up
-            </Link>
+            Don't have an account? <Link to="/register">Sign Up</Link>
           </div>
         </Card.Body>
       </Card>

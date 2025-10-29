@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const ProductForm = () => {
   const [cashew, setCashew] = useState({
@@ -10,6 +10,12 @@ const ProductForm = () => {
 
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [role, setRole] = useState('');
+
+  useEffect(() => {
+    const storedRole = localStorage.getItem('role');
+    setRole(storedRole);
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -29,8 +35,14 @@ const ProductForm = () => {
       return;
     }
 
+    if (role !== 'admin') {
+      setMessage(' Access denied. Only admins can add products.');
+      setLoading(false);
+      return;
+    }
+
     try {
-      const response = await fetch('https://cashew-backend-1.onrender.com/api/products', {
+      const response = await fetch('https://cashew-backend-1.onrender.com/api/products/add', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -39,7 +51,7 @@ const ProductForm = () => {
         body: JSON.stringify({
           name: cashew.product,
           image: cashew.image,
-          quantity: cashew.quantity,
+          weight: cashew.quantity,
           price: cashew.rate,
         }),
       });
@@ -53,8 +65,10 @@ const ProductForm = () => {
         setMessage(` Error: ${data.message || 'Failed to add product.'}`);
       }
     } catch (err) {
-      setMessage(' Failed to connect to server.', err);
-    } finally {
+  console.error("Server error:", err);
+  setMessage(' Failed to connect to server.');
+}
+ finally {
       setLoading(false);
     }
   };
@@ -62,14 +76,34 @@ const ProductForm = () => {
   return (
     <div
       className="container py-5 px-3"
-      style={{ backgroundColor: '#B2CD9C', borderRadius: '10px', marginTop: '40px' }}
+      style={{
+        backgroundColor: '#B2CD9C',
+        borderRadius: '10px',
+        marginTop: '40px',
+      }}
     >
-      <form onSubmit={handleSubmit} className="mx-auto" style={{ maxWidth: '600px' }}>
+      <form
+        onSubmit={handleSubmit}
+        className="mx-auto"
+        style={{ maxWidth: '600px' }}
+      >
         <h1 className="text-center mb-5" style={{ color: '#4B352A' }}>
           Add Product
         </h1>
 
-        {message && <div className="alert alert-info text-center">{message}</div>}
+        {message && (
+          <div
+            className={`alert text-center ${
+              message.includes('✅')
+                ? 'alert-success'
+                : message.includes('⚠️')
+                ? 'alert-warning'
+                : 'alert-danger'
+            }`}
+          >
+            {message}
+          </div>
+        )}
 
         <div className="mb-3">
           <input
@@ -100,7 +134,7 @@ const ProductForm = () => {
             <input
               type="text"
               className="form-control"
-              placeholder="Quantity"
+              placeholder="Quantity (e.g., 250g)"
               value={cashew.quantity}
               name="quantity"
               onChange={handleChange}
@@ -111,7 +145,7 @@ const ProductForm = () => {
             <input
               type="text"
               className="form-control"
-              placeholder="Rate"
+              placeholder="Rate (e.g., ₹200)"
               value={cashew.rate}
               name="rate"
               onChange={handleChange}
@@ -124,7 +158,11 @@ const ProductForm = () => {
           <button
             type="submit"
             className="btn"
-            style={{ backgroundColor: '#4B352A', color: '#B2CD9C', border: '1px solid #4B352A' }}
+            style={{
+              backgroundColor: '#4B352A',
+              color: '#B2CD9C',
+              border: '1px solid #4B352A',
+            }}
             disabled={loading}
           >
             {loading ? 'Adding...' : 'Add Product'}
