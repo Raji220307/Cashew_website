@@ -23,7 +23,7 @@ const localProducts = [
 ];
 
 function Productlist() {
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState(localProducts); // ✅ Start with local products
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -34,7 +34,6 @@ function Productlist() {
         const data = await res.json();
 
         if (res.ok && data.length > 0) {
-          // Backend products
           setProducts(
             data.map((p) => ({
               id: p._id,
@@ -45,15 +44,12 @@ function Productlist() {
             }))
           );
         } else {
-          // No data — fallback to local
-          setProducts(localProducts);
+          console.warn("Using local products — no backend data.");
         }
       } catch (err) {
-  console.error("Fetch error:", err);
-  setError("Failed to fetch from server, showing local products instead.");
-  setProducts(localProducts);
-}
- finally {
+        console.error("Fetch error:", err);
+        setError("⚠️ Unable to fetch from server — showing local products.");
+      } finally {
         setLoading(false);
       }
     };
@@ -62,20 +58,26 @@ function Productlist() {
   }, []);
 
   return (
-    <Container className="py-5 container">
-      <h2 className="text-center mb-4" style={{ color: "#B2CD9C" }}>
-        Explore Our Cashews
-      </h2>
+  <Container className="py-5 container" style={{ minHeight: "70vh" }}>
+    <h2 className="text-center mb-4" style={{ color: "#B2CD9C" }}>
+      Explore Our Cashews
+    </h2>
 
-      {loading ? (
-        <div className="text-center text-secondary">Loading products...</div>
-      ) : error ? (
-        <div className="text-center text-danger">{error}</div>
-      ) : (
-        <CardProducts products={products} />
-      )}
-    </Container>
-  );
+    {/* ✅ Show loading text ONLY if products are not yet displayed */}
+    {loading && products.length === 0 && (
+      <div className="text-center text-secondary">Fetching latest products...</div>
+    )}
+
+    {/* ✅ Show error message only if no products at all */}
+    {error && products.length === 0 && (
+      <div className="text-center text-danger mb-3">{error}</div>
+    )}
+
+    {/* ✅ Always show products (even local ones) */}
+    {products.length > 0 && <CardProducts products={products} />}
+  </Container>
+);
+
 }
 
 export default Productlist;
